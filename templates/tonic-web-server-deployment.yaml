@@ -62,6 +62,8 @@ spec:
         - name: vector
           mountPath: /tonic/vector_data
         {{- end }}
+        - name: certificate-volume
+          mountPath: /certificates
         env:
         {{- range $key, $value := ((.Values.tonicai).web_server).env }}
         - name: {{ $key }}
@@ -80,6 +82,11 @@ spec:
           valueFrom:
             secretKeyRef:
               name: tonic-db-password
+              key: password
+        - name: TONIC_PFX_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tonic-certificate
               key: password
         - name: TONIC_DB_PORT
           value: {{quote .Values.tonicdb.port }}
@@ -164,4 +171,7 @@ spec:
       - name: db2
         emptyDir: {}
       {{- end }}
+      - name: certificate-volume
+        secret:
+          secretName: tonic-certificate
 status: {}
